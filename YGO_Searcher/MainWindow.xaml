@@ -1,0 +1,399 @@
+﻿<Window x:Class="YGO_Searcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:YGO_Searcher"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <local:CardTypeConverter x:Key="CardTypeConverter" />
+        <local:MonsterStatConverter x:Key="MonsterStatConverter" />
+        <local:MonsterStatVisibilityConverter x:Key="MonsterStatVisibilityConverter" />
+    </Window.Resources>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Update Cards from DB" Click="GetCardsFromDB" />
+                <Separator />
+                <MenuItem Header="_Save Cards in file" Click="SaveCardsInFile" />
+                <MenuItem Header="_Load Cards from file" Click="LoadCardsFromFile" />
+                <Separator />
+                <MenuItem Header="_Exit" />
+            </MenuItem>
+        </Menu>
+        <Grid DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" Width="475">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Margin="0" Background="GhostWhite" BorderBrush="Gainsboro" BorderThickness="1">
+                    <Grid Margin="2,0,0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <!--<ColumnDefinition Width="1*" />-->
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Grid.Column="0"
+                           Width="Auto" Orientation="Horizontal">
+                            <TextBox Name="UserInput" KeyDown="UserInput_KeyDown" Width="320" Height="30" FontSize="20" />
+                            <WrapPanel Grid.Row="0" Grid.Column="1"
+                           Orientation="Vertical">
+                                <CheckBox Name="TitleOnly_CheckBox">Title only</CheckBox>
+                                <CheckBox Name="DescriptionOnly_CheckBox">Description only</CheckBox>
+                                <CheckBox Name="ExactWords_CheckBox">Exact words</CheckBox>
+                                <CheckBox Name="SearchArchetype_CheckBox" IsChecked="True">Search Archetypes</CheckBox>
+                            </WrapPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" Grid.Column="0"
+                            Orientation="Horizontal">
+                            <WrapPanel Orientation="Vertical">
+                                <WrapPanel>
+                                    <TextBlock Margin="5" TextTrimming="CharacterEllipsis">
+                                Card Type:
+                                    </TextBlock>
+                                    <ComboBox Name="CardType_ComboBox"
+                                      Width="Auto" Height="25"
+                                      DropDownClosed="UpdateFilters">
+                                        <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                        <ComboBoxItem>Monster</ComboBoxItem>
+                                        <ComboBoxItem>Spell</ComboBoxItem>
+                                        <ComboBoxItem>Trap</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox Name="MonsterCardType_ComboBox"
+                                      Width="Auto" Height="25"
+                                      DropDownClosed="UpdateFilters">
+                                        <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                        <ComboBoxItem>Normal</ComboBoxItem>
+                                        <ComboBoxItem>Effect</ComboBoxItem>
+                                        <ComboBoxItem>Ritual</ComboBoxItem>
+                                        <ComboBoxItem>Fusion</ComboBoxItem>
+                                        <ComboBoxItem>Synchro</ComboBoxItem>
+                                        <ComboBoxItem>XYZ</ComboBoxItem>
+                                        <ComboBoxItem>Link</ComboBoxItem>
+                                    </ComboBox>
+                                </WrapPanel>
+                                <WrapPanel Orientation="Vertical">
+                                    <WrapPanel Name="MonsterType_WrapPanel">
+                                        <TextBlock Margin="5" TextTrimming="CharacterEllipsis">
+                                    Monster Type:
+                                        </TextBlock>
+                                        <ComboBox Name="MonsterType_ComboBox"
+                                    Width="Auto" Height="25">
+                                            <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                            <ComboBoxItem>Aqua</ComboBoxItem>
+                                            <ComboBoxItem>Beast</ComboBoxItem>
+                                            <ComboBoxItem>Beast-Warrior</ComboBoxItem>
+                                            <ComboBoxItem>Creator-God</ComboBoxItem>
+                                            <ComboBoxItem>Cyberse</ComboBoxItem>
+                                            <ComboBoxItem>Dinosaur</ComboBoxItem>
+                                            <ComboBoxItem>Divine-Beast</ComboBoxItem>
+                                            <ComboBoxItem>Dragon</ComboBoxItem>
+                                            <ComboBoxItem>Fairy</ComboBoxItem>
+                                            <ComboBoxItem>Fiend</ComboBoxItem>
+                                            <ComboBoxItem>Fish</ComboBoxItem>
+                                            <ComboBoxItem>Insect</ComboBoxItem>
+                                            <ComboBoxItem>Machine</ComboBoxItem>
+                                            <ComboBoxItem>Plant</ComboBoxItem>
+                                            <ComboBoxItem>Psychic</ComboBoxItem>
+                                            <ComboBoxItem>Pyro</ComboBoxItem>
+                                            <ComboBoxItem>Reptile</ComboBoxItem>
+                                            <ComboBoxItem>Rock</ComboBoxItem>
+                                            <ComboBoxItem>Sea Serpent</ComboBoxItem>
+                                            <ComboBoxItem>Spellcaster</ComboBoxItem>
+                                            <ComboBoxItem>Thunder</ComboBoxItem>
+                                            <ComboBoxItem>Warrior</ComboBoxItem>
+                                            <ComboBoxItem>Winged Beast</ComboBoxItem>
+                                            <ComboBoxItem>Wyrm</ComboBoxItem>
+                                            <ComboBoxItem>Zombie</ComboBoxItem>
+                                        </ComboBox>
+
+                                        <TextBlock Margin="5" TextTrimming="CharacterEllipsis">
+                                    2nd Type:
+                                        </TextBlock>
+                                        <ComboBox  Name="Monster2ndType_ComboBox"
+                                    Width="Auto" Height="25"
+                                      DropDownClosed="UpdateFilters">
+                                            <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                            <ComboBoxItem>Effect</ComboBoxItem>
+                                            <ComboBoxItem>Flip</ComboBoxItem>
+                                            <ComboBoxItem>Gemini</ComboBoxItem>
+                                            <ComboBoxItem>Pendulum</ComboBoxItem>
+                                            <ComboBoxItem>Spirit</ComboBoxItem>
+                                            <ComboBoxItem>Toon</ComboBoxItem>
+                                            <ComboBoxItem>Tuner</ComboBoxItem>
+                                            <ComboBoxItem>Union</ComboBoxItem>
+                                        </ComboBox>
+                                    </WrapPanel>
+                                    <WrapPanel Name="SpellType_WrapPanel">
+                                        <TextBlock Margin="5" TextTrimming="CharacterEllipsis">
+                                    Spell Type:
+                                        </TextBlock>
+                                        <ComboBox Name="SpellType_ComboBox"
+                                    Width="Auto" Height="25">
+                                            <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="/Icons/Property/Normal.png" Width="20" Margin="0,0,3,0"/>
+                                                    <TextBlock>Normal</TextBlock>
+                                                </StackPanel>
+                                            </ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="/Icons/Property/Field.png" Width="20" Margin="0,0,3,0"/>
+                                                    <TextBlock>Field</TextBlock>
+                                                </StackPanel>
+                                            </ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="/Icons/Property/Equip.png" Width="20" Margin="0,0,3,0"/>
+                                                    <TextBlock>Equip</TextBlock>
+                                                </StackPanel>
+                                            </ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="/Icons/Property/Continuous.png" Width="20" Margin="0,0,3,0"/>
+                                                    <TextBlock>Continuous</TextBlock>
+                                                </StackPanel>
+                                            </ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="/Icons/Property/Quick-Play.png" Width="20" Margin="0,0,3,0"/>
+                                                    <TextBlock>Quick-Play</TextBlock>
+                                                </StackPanel>
+                                            </ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="/Icons/Property/Ritual.png" Width="20" Margin="0,0,3,0"/>
+                                                    <TextBlock>Ritual</TextBlock>
+                                                </StackPanel>
+                                            </ComboBoxItem>
+                                        </ComboBox>
+                                    </WrapPanel>
+                                    <WrapPanel Name="TrapType_WrapPanel">
+                                        <TextBlock Margin="5" TextTrimming="CharacterEllipsis">
+                                    Trap Type:
+                                        </TextBlock>
+                                        <ComboBox Name="TrapType_ComboBox"
+                                    Width="Auto" Height="25">
+                                            <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="/Icons/Property/Normal.png" Width="20" Margin="0,0,3,0"/>
+                                                    <TextBlock>Normal</TextBlock>
+                                                </StackPanel>
+                                            </ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="/Icons/Property/Continuous.png" Width="20" Margin="0,0,3,0"/>
+                                                    <TextBlock>Continuous</TextBlock>
+                                                </StackPanel>
+                                            </ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="/Icons/Property/Counter.png" Width="20" Margin="0,0,3,0"/>
+                                                    <TextBlock>Counter</TextBlock>
+                                                </StackPanel>
+                                            </ComboBoxItem>
+                                        </ComboBox>
+                                    </WrapPanel>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <TextBlock Margin="5">Limitations</TextBlock>
+                                    <ComboBox Name="Limit_ComboBox"
+                                Width="Auto">
+                                        <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                        <ComboBoxItem>0</ComboBoxItem>
+                                        <ComboBoxItem>1</ComboBoxItem>
+                                        <ComboBoxItem>2</ComboBoxItem>
+                                        <ComboBoxItem>3</ComboBoxItem>
+                                    </ComboBox>
+                                </WrapPanel>
+                            </WrapPanel>
+                            <WrapPanel Name="MonsterAttributes_WrapPanel"
+                               Orientation="Vertical" Margin="10,0,0,0">
+                                <WrapPanel>
+                                    <TextBlock Margin="5" TextTrimming="CharacterEllipsis">
+                                Monster Attribute:
+                                    </TextBlock>
+                                    <ComboBox Name="MonsterAttribute_ComboBox"
+                                Width="Auto" Height="25">
+                                        <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/Icons/Attribute/LIGHT.png" Width="20" Margin="0,0,3,0"/>
+                                                <TextBlock>LIGHT</TextBlock>
+                                            </StackPanel>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/Icons/Attribute/DARK.png" Width="20" Margin="0,0,3,0"/>
+                                                <TextBlock>DARK</TextBlock>
+                                            </StackPanel>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/Icons/Attribute/DIVINE.png" Width="20" Margin="0,0,3,0"/>
+                                                <TextBlock>DIVINE</TextBlock>
+                                            </StackPanel>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/Icons/Attribute/EARTH.png" Width="20" Margin="0,0,3,0"/>
+                                                <TextBlock>EARTH</TextBlock>
+                                            </StackPanel>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/Icons/Attribute/FIRE.png" Width="20" Margin="0,0,3,0"/>
+                                                <TextBlock>FIRE</TextBlock>
+                                            </StackPanel>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/Icons/Attribute/WATER.png" Width="20" Margin="0,0,3,0"/>
+                                                <TextBlock>WATER</TextBlock>
+                                            </StackPanel>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="/Icons/Attribute/WIND.png" Width="20" Margin="0,0,3,0"/>
+                                                <TextBlock>WIND</TextBlock>
+                                            </StackPanel>
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <TextBox Name="LvlMin_TextBox" PreviewTextInput="CheckTextInput"
+                                     Width="20" Margin="0,0,5,0" />
+                                    <TextBlock>&lt;= Lvl/Rank &lt;=</TextBlock>
+                                    <TextBox Name="LvlMax_TextBox" PreviewTextInput="CheckTextInput"
+                                     Width="20" Margin="5,0,0,0" />
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <TextBox Name="AtkMin_TextBox" PreviewTextInput="CheckTextInput"
+                                     Width="40" Margin="0,0,5,0" />
+                                    <TextBlock>&lt;= ATK &lt;=</TextBlock>
+                                    <TextBox Name="AtkMax_TextBox" PreviewTextInput="CheckTextInput"
+                                     Width="40" Margin="5,0,0,0" />
+                                </WrapPanel>
+                                <WrapPanel>
+                                    <TextBox Name="DefMin_TextBox" PreviewTextInput="CheckTextInput"
+                                     Width="40" Margin="0,0,5,0" />
+                                    <TextBlock>&lt;= DEF &lt;=</TextBlock>
+                                    <TextBox Name="DefMax_TextBox" PreviewTextInput="CheckTextInput"
+                                     Width="40" Margin="5,0,0,0" />
+                                </WrapPanel>
+                                <WrapPanel Name="PendulumScales_WrapPanel">
+                                    <TextBox Name="PendulumScalesMin_TextBox" PreviewTextInput="CheckTextInput"
+                                     Width="20" Margin="0,0,5,0" />
+                                    <TextBlock>&lt;= Pendulum Scale &lt;=</TextBlock>
+                                    <TextBox Name="PendulumScalesMax_TextBox" PreviewTextInput="CheckTextInput"
+                                     Width="20" Margin="5,0,0,0" />
+                                </WrapPanel>
+                            </WrapPanel>
+                        </StackPanel>
+                        <Button Grid.Row="2" Grid.Column="0"
+                                Height="25" Width="100"
+                                VerticalAlignment="Center" HorizontalAlignment="Left"
+                                Click="ResetFilters">
+                            Reset Filters
+                        </Button>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                            <ComboBox Name="Sorting_ComboBox"
+                                VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                                 Grid.Row="2" Height="23" Width="Auto">
+                                <ComboBoxItem IsSelected="True">Alpha</ComboBoxItem>
+                                <ComboBoxItem>New</ComboBoxItem>
+                            </ComboBox>
+                            <Button Grid.Row="2" Grid.Column="0"
+                        Height="50" Width="100"
+                        VerticalAlignment="Center" HorizontalAlignment="Right"
+                        Click="SearchCards">
+                                <Bold>SEARCH</Bold>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <ListView Grid.Row="1" Name="CardSearch_ListView" Height="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Background="Transparent" MouseEnter="UpdateSelectedCard">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="65" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Image Grid.Column="0" Width="40" VerticalAlignment="Stretch" Source="{Binding ImgUrlSmall}" />
+                                <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding Converter={StaticResource CardTypeConverter}}" />
+                                    <TextBlock Visibility="{Binding Converter={StaticResource MonsterStatVisibilityConverter} }" Text="{Binding Converter={StaticResource MonsterStatConverter}}" />
+                                    <TextBlock Text="{Binding Description}" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <!--<ListViewItem Height="65">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="65" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Width="40" VerticalAlignment="Center" Source="https://storage.googleapis.com/ygoprodeck.com/pics_small/27551.jpg" />
+                            <StackPanel Grid.Column="1" Margin="3,0,0,0" Orientation="Vertical">
+                                <TextBlock TextTrimming="CharacterEllipsis">
+                            Blue-Eyes White Dragon
+                                </TextBlock>
+                                <TextBlock TextTrimming="CharacterEllipsis">
+                            Dragon/Normal
+                                </TextBlock>
+                                <TextBlock TextTrimming="CharacterEllipsis">
+                            ATK/3000 DEF/2500
+                                </TextBlock>
+                                <TextBlock TextTrimming="CharacterEllipsis">
+                            The ultimate Dragon.WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </ListViewItem>-->
+                </ListView>
+            </Grid>
+            <Grid Name="CardPreview" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <Image Grid.Row="0" Height="275" Source="{Binding ImgUrl}"/>
+                <Border Grid.Row="1">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Name}" />
+                        <TextBlock Text="{Binding Converter={StaticResource CardTypeConverter}}" />
+                        <TextBlock Visibility="{Binding Converter={StaticResource MonsterStatVisibilityConverter} }" Text="{Binding Converter={StaticResource MonsterStatConverter}}" />
+                    </StackPanel>
+                </Border>
+                <ScrollViewer Grid.Row="2">
+                    <TextBox TextWrapping="Wrap"
+                         IsReadOnly="True"
+                         Text="{Binding Description}" />
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>

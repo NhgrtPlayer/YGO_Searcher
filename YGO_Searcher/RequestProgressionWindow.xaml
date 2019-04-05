@@ -1,0 +1,23 @@
+﻿<Window x:Class="YGO_Searcher.RequestProgressionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:YGO_Searcher"
+        mc:Ignorable="d"
+        Title="RequestProgressionWindow" ResizeMode="NoResize"
+        Height="320" Width="400">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ProgressBar Grid.Row="0"
+                     Name="RequestProgressStatus_Bar"
+                     Height="30"
+                     Minimum="0" Maximum="100" />
+        <ListBox Grid.Row="1"
+                 Margin="10,10,0,13" Name="Log_ListBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="200" />
+    </Grid>
+</Window>
