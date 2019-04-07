@@ -60,33 +60,38 @@ namespace YGO_Searcher
             progressStatus.Report("Reading received data : OK !");
         }
 
-        public List<Card> GetCardsFromAnswer(IProgress<double> progressPercentage, IProgress<string> progressStatus)
+        public List<Card> GetCardsFromAnswer(IProgress<double> progressPercentage, IProgress<string> progressStatus, bool UseGoatFormat)
         {
-            progressStatus.Report("Creating local cards...");
             List<Card> ToReturn = new List<Card>();
+            int i = 0;
             try
             {
+                progressStatus.Report("Creating local cards...");
                 JArray cardResponse = JArray.Parse(CardsRequest);
-                IList<JToken> cardTokens = (cardResponse.Children().ToList())[0].Children().ToList();
-
-                foreach (var cardToken in cardTokens)
+                int i_max = (cardResponse.Children().ToList()).Count;
+                for (i = 0; i < i_max; i++)
                 {
-                    if (cardToken.Value<string>("type").Contains("Skill") || cardToken.Value<string>("type") == "Token")
-                        continue;
-                    Card newCard = new Card(cardToken);
-                    ToReturn.Add(newCard);
-                    if (cardTokens.Count > 0)
-                        progressPercentage.Report(ToReturn.Count * 100 / cardTokens.Count);
+                    IList<JToken> cardTokens = (cardResponse.Children().ToList())[i].Children().ToList();
+
+                    foreach (var cardToken in cardTokens)
+                    {
+                        if (cardToken.Value<string>("type").Contains("Skill") || cardToken.Value<string>("type") == "Token")
+                            continue;
+                        Card newCard = new Card(cardToken, UseGoatFormat);
+                        if ((UseGoatFormat && Helper.IsGoatFormat(cardToken.Value<string>("set_tag"))) || !UseGoatFormat)
+                            ToReturn.Add(newCard);
+                        if (cardTokens.Count > 0)
+                            progressPercentage.Report(i * 100 / cardTokens.Count);
+                    }
                 }
+                progressStatus.Report("Creating local cards : OK !");
+                progressPercentage.Report(100);
+                return (ToReturn);
             }
             catch (Exception e)
             {
                 return (ToReturn);
             }
-
-            progressStatus.Report("Creating local cards : OK !");
-            progressPercentage.Report(100);
-            return (ToReturn);
         }
     }
 }

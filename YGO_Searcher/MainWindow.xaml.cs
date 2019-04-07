@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.IO;
+using Microsoft.Win32;
 
 namespace YGO_Searcher
 {
@@ -26,6 +27,7 @@ namespace YGO_Searcher
         bool ExactWords = false;
         bool SortAlpha = false;
         bool SearchArchetype = true;
+        bool UseGOATFormat = false;
         CardType ChosenCardType = CardType.MONSTER | CardType.SPELL | CardType.TRAP;
         MonsterCardType ChosenMonsterCardType = MonsterCardType.EFFECT;
         MonsterAttribute ChosenMonsterAttribute = MonsterAttribute.LIGHT;
@@ -46,6 +48,8 @@ namespace YGO_Searcher
         List<Card> ShownCards;
         Card SelectedCard;
 
+        List<Card> Deck;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -53,14 +57,19 @@ namespace YGO_Searcher
             Cards = new List<Card>();
             ShownCards = new List<Card>();
             SelectedCard = new Card();
+            Deck = new List<Card>();
 
-            if (File.Exists("cards.bin"))
+            if ((!UseGOATFormat && File.Exists("cards.bin")) || (UseGOATFormat && File.Exists("cards_goat.bin")))
                 LoadCardsFromFile(null, null);
 
             ResetFilters(null, null);
             UpdateFilters(null, null);
 
             UpdateShownCards(Cards.GetRange(0, 15));
+
+            UpdateDeck();
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(Deck_ListView.ItemsSource);
+            view.GroupDescriptions.Add(new PropertyGroupDescription("DeckPart"));
         }
 
         private void CheckTextInput(object sender, TextCompositionEventArgs e)
@@ -95,7 +104,7 @@ namespace YGO_Searcher
             Task.Run(async () =>
             {
                 await Co.RequestAllCardsAsync(progressPercentage, progressStatus);
-                Cards = Co.GetCardsFromAnswer(progressPercentage, progressStatus);
+                Cards = Co.GetCardsFromAnswer(progressPercentage, progressStatus, UseGOATFormat);
                 progressStatus.Report("Updating UI...");
                 progressPercentage.Report(0);
 
@@ -115,12 +124,18 @@ namespace YGO_Searcher
 
         private void SaveCardsInFile(object sender, EventArgs e)
         {
-            Serializer.Save("cards.bin", Cards);
+            if (UseGOATFormat)
+                Serializer.Save("cards_goat.bin", Cards);
+            else
+                Serializer.Save("cards.bin", Cards);
         }
 
         private void LoadCardsFromFile(object sender, EventArgs e)
         {
-            Cards = Serializer.Load<List<Card>>("cards.bin");
+            if (UseGOATFormat)
+                Cards = Serializer.Load<List<Card>>("cards_goat.bin");
+            else
+                Cards = Serializer.Load<List<Card>>("cards.bin");
 
             UpdateShownCards(Cards.GetRange(0, 15));
         }
@@ -152,29 +167,6 @@ namespace YGO_Searcher
             UpdateFilters(sender, e);
 
             List<Card> Result = Cards;
-            /*
-            string toShow = "";
-
-            toShow += "TitleOnly : " + TitleOnly.ToString() + '\n';
-            toShow += "DescriptionOnly : " + DescriptionOnly.ToString() + '\n';
-            toShow += "ExactWords : " + ExactWords.ToString() + '\n';
-            toShow += "ChosenCardType : " + ChosenCardType.ToString() + '\n';
-            toShow += "ChosenMonsterCardType : " + ChosenMonsterCardType.ToString() + '\n';
-            toShow += "ChosenMonsterAttribute : " + ChosenMonsterAttribute.ToString() + '\n';
-            toShow += "ChosenMonsterType : " + ChosenMonsterType.ToString() + '\n';
-            toShow += "ChosenMonster2ndType : " + ChosenMonster2ndType.ToString() + '\n';
-            toShow += "ChosenSpellType : " + ChosenSpellType.ToString() + '\n';
-            toShow += "ChosenTrapType : " + ChosenTrapType.ToString() + '\n';
-            toShow += "LvlMin : " + LvlMin.ToString() + '\n';
-            toShow += "LvlMax : " + LvlMax.ToString() + '\n';
-            toShow += "AtkMin : " + AtkMin.ToString() + '\n';
-            toShow += "AtkMax : " + AtkMax.ToString() + '\n';
-            toShow += "DefMin : " + DefMin.ToString() + '\n';
-            toShow += "DefMax : " + DefMax.ToString() + '\n';
-            toShow += "CardLimitation : " + CardLimitation.ToString() + '\n';
-            toShow += "SortAlpha : " + SortAlpha + '\n';
-            MessageBox.Show(toShow);
-            */
 
             Result = Result.FindAll(card => card.CheckCardCriteria(UserInput.Text,
                     TitleOnly,
@@ -195,9 +187,8 @@ namespace YGO_Searcher
                     CardLimitation));
 
             if (SortAlpha)
-            {
                 Result.Sort((a, b) => (a.Name.CompareTo(b.Name)));
-            }
+
             UpdateShownCards(Result);
         }
 
@@ -208,6 +199,7 @@ namespace YGO_Searcher
             ExactWords = ExactWords_CheckBox.IsChecked.Value;
             SortAlpha = (Sorting_ComboBox.SelectedIndex == 0);
             SearchArchetype = SearchArchetype_CheckBox.IsChecked.Value;
+            UseGOATFormat = UseGoatFormat.IsChecked;
 
             ChosenCardType = Helper.GetSelection<CardType>(CardType_ComboBox.SelectedIndex);
             ChosenMonsterCardType = Helper.GetSelection<MonsterCardType>(MonsterCardType_ComboBox.SelectedIndex);
@@ -244,18 +236,82 @@ namespace YGO_Searcher
                 CardSearch_ListView.ScrollIntoView(CardSearch_ListView.Items[0]);
         }
 
+        private void UpdateGoatFormat_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateFilters(sender, e);
+
+            if ((!UseGOATFormat && File.Exists("cards.bin")) || (UseGOATFormat && File.Exists("cards_goat.bin")))
+                LoadCardsFromFile(null, null);
+        }
+
         private void UpdateSelectedCard(object sender, MouseEventArgs e)
         {
-            if (sender == null || (sender as Grid) == null)
-            {
+            if (sender == null) {
                 return;
             }
             SelectedCard = (sender as Grid)?.DataContext as Card;
+            if (SelectedCard == null) {
+                SelectedCard = (sender as DockPanel)?.DataContext as Card;
+            }
             CardPreview.DataContext = SelectedCard;
-            //CardPreview.UpdateLayout();
         }
 
+        private void AddCardToDeck(object sender, MouseEventArgs e)
+        {
+            if (sender == null) {
+                return;
+            }
+            if (((sender as Grid)?.DataContext as Card).CanAddCardToDeck(Deck))
+                Deck.Add((sender as Grid)?.DataContext as Card);
 
+            UpdateDeck();
+        }
+
+        private void RemoveCardFromDeck(object sender, MouseEventArgs e)
+        {
+            if (sender == null) {
+                return;
+            }
+            var CardToRemove = (sender as DockPanel)?.DataContext as Card;
+            Deck.Remove(CardToRemove);
+            UpdateDeck();
+        }
+
+        private void UpdateDeck()
+        {
+            Deck_ListView.ItemsSource = Deck;
+            Deck_ListView.Items.Refresh();
+            CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(Deck_ListView.ItemsSource);
+            view.Refresh();
+        }
+
+        private void SortDeck_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Deck.Sort((a, b) => (a.Name.CompareTo(b.Name)));
+            Deck.Sort((a, b) => (a.Type.CompareTo(b.Type)));
+            UpdateDeck();
+        }
+
+        private void ClearDeck_Button_Click(object sender, RoutedEventArgs e)
+        {
+            Deck.Clear();
+            UpdateDeck();
+        }
+
+        private void ExportDeck_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "YGOPro Deck file (*.ydk)|*.ydk";
+            saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            if (saveFileDialog.ShowDialog() == true)
+                Helper.ExportDeck(Deck, saveFileDialog.FileName); // TODO
+        }
+
+        private void About_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            About.ShowAboutWindow();
+        }
 
     } // END OF MainWindow
 
@@ -302,11 +358,36 @@ namespace YGO_Searcher
         }
     }
 
-    public class MonsterLimitVisibilityConverter : IValueConverter
+    public class CardLimitConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value == null || (value as Card) == null || (value as Card).Limitation != 3)
+            if (value == null || (value as Card) == null)
+                return ("/Icons/Limitation/Forbidden.png");
+            switch ((value as Card).Limitation)
+            {
+                case 1:
+                    return ("/Icons/Limitation/Limited.png");
+                case 2:
+                    return ("/Icons/Limitation/Semi-Limited.png");
+                default:
+                    return ("/Icons/Limitation/Forbidden.png");
+                    // On retourne ça même pour les cartes à x3 car on va le cacher pour ces derniers
+                    // Si on retourne un truc vide, le programme aime pas ça au runtime
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    public class CardLimitVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value == null || (value as Card) == null || (value as Card).Limitation >= 3)
                 return (Visibility.Collapsed);
             return (Visibility.Visible);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -101,18 +102,14 @@ public static TrapType GetTrapTypeSelection(int TrapTypeSelectedIndex)
 */
         public static int GetLimitationByString(string Str)
         {
-            if (Str == "Forbidden")
-            {
+            if (Str == null)
+                return (3);
+            if (Str == "Banned")
                 return (0);
-            }
             if (Str == "Limited")
-            {
                 return (1);
-            }
             if (Str == "Semi-Limited")
-            {
                 return (2);
-            }
             return (3);
         }
 
@@ -453,6 +450,112 @@ public static TrapType GetTrapTypeSelection(int TrapTypeSelectedIndex)
         public static bool CheckString(string Str, string Substr)
         {
             return (Str.ToLower().Contains(Substr.ToLower()));
+        }
+
+        public static void ExportDeck(List<Card> Deck, string FilePath)
+        {
+            string Text = "";
+            List<string> MainDeckIds = new List<string>();
+            List<string> ExtraDeckIds = new List<string>();
+
+            foreach (var card in Deck)
+            {
+                if (card.Id != null && card.DeckPart == DeckPart.MAIN_DECK)
+                    MainDeckIds.Add(card.Id.ToString());
+                else if (card.Id != null && card.DeckPart == DeckPart.EXTRA_DECK)
+                    ExtraDeckIds.Add(card.Id.ToString());
+            }
+
+            Text += "#created by ...\n";
+            Text += "#main\n";
+            foreach (var cardId in MainDeckIds)
+            {
+                Text += cardId + '\n';
+            }
+            Text += "#extra\n";
+            foreach (var cardId in ExtraDeckIds)
+            {
+                Text += cardId + '\n';
+            }
+            Text += "!side\n";
+            File.WriteAllText(FilePath, Text);
+        }
+
+        public static bool IsGoatFormat(string SetTagsStr)
+        {
+            if (SetTagsStr == null)
+                return (false);
+
+            List<string> SetTags = SetTagsStr.Split(',').ToList();
+            List<string> GoatSetTags = new List<string>();
+            GoatSetTags.Add("LOB");
+            GoatSetTags.Add("MRD");
+            GoatSetTags.Add("SRL");
+            GoatSetTags.Add("MRL");
+            GoatSetTags.Add("PSV");
+            GoatSetTags.Add("LON");
+            GoatSetTags.Add("LOD");
+            GoatSetTags.Add("PGD");
+            GoatSetTags.Add("MFC");
+            GoatSetTags.Add("DCR");
+            GoatSetTags.Add("IOC");
+            GoatSetTags.Add("AST");
+            GoatSetTags.Add("SOD");
+            GoatSetTags.Add("RDS");
+            GoatSetTags.Add("FET");
+            GoatSetTags.Add("DB1");
+            GoatSetTags.Add("DB2");
+            GoatSetTags.Add("DR1");
+            GoatSetTags.Add("TP1");
+            GoatSetTags.Add("TP2");
+            GoatSetTags.Add("TP3");
+            GoatSetTags.Add("TP4");
+            GoatSetTags.Add("TP5");
+            GoatSetTags.Add("TP6");
+            GoatSetTags.Add("BPT");
+            GoatSetTags.Add("BPT");
+            GoatSetTags.Add("CT1");
+            GoatSetTags.Add("DDS");
+            GoatSetTags.Add("FMR");
+            GoatSetTags.Add("EDS");
+            GoatSetTags.Add("DOR");
+            GoatSetTags.Add("SDD");
+            GoatSetTags.Add("PCY");
+            GoatSetTags.Add("TFK");
+            GoatSetTags.Add("TSC");
+            GoatSetTags.Add("WC4");
+            GoatSetTags.Add("DOD");
+            GoatSetTags.Add("PCK");
+            GoatSetTags.Add("ROD");
+            GoatSetTags.Add("PCJ");
+            GoatSetTags.Add("DBT");
+            GoatSetTags.Add("CMC");
+            GoatSetTags.Add("WC5");
+            GoatSetTags.Add("MP1");
+            GoatSetTags.Add("MOV");
+            GoatSetTags.Add("SP1-EN001");
+            GoatSetTags.Add("SP1-EN002");
+            GoatSetTags.Add("SDY");
+            GoatSetTags.Add("SDK");
+            GoatSetTags.Add("SDJ");
+            GoatSetTags.Add("SDP");
+            GoatSetTags.Add("SYE");
+            GoatSetTags.Add("SKE");
+            GoatSetTags.Add("SD1");
+            GoatSetTags.Add("SD2");
+            GoatSetTags.Add("SD3");
+            GoatSetTags.Add("SD4");
+
+            foreach (var SetTag in SetTags)
+            {
+                foreach (var GoatSetTag in GoatSetTags)
+                {
+                    if ((SetTag.Length > GoatSetTag.Length && SetTag.StartsWith(GoatSetTag) && SetTag[GoatSetTag.Length] == '-') || SetTag == GoatSetTag)
+                        return (true);
+                }
+            }
+
+            return (false);
         }
     }
 }

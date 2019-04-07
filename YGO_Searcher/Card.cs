@@ -101,15 +101,22 @@ namespace YGO_Searcher
         COUNTER = 1 << 2
     }
 
+    public enum DeckPart
+    {
+        MAIN_DECK,
+        EXTRA_DECK
+    }
+
     [Serializable]
     public class Card
     {
-        string Id;
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Id { get; }
+        public string Name { get; }
+        public string Description { get; }
         public int Limitation = 3;
 
         public CardType Type = 0;
+        public DeckPart DeckPart { get; }
 
         MonsterCardType MonsterCardType = 0;
         MonsterType MonsterType = 0;
@@ -135,7 +142,7 @@ namespace YGO_Searcher
             this.Id = "";
             this.Name = "";
         }
-        public Card(JToken Token)
+        public Card(JToken Token, bool UseGoatFormat)
         {
             try
             {
@@ -143,13 +150,23 @@ namespace YGO_Searcher
                 Name = Token.Value<string>("name");
                 Description = Token.Value<string>("desc");
                 Limitation = Helper.GetLimitationByString(Token.Value<string>("ban_tcg"));
+                if (UseGoatFormat)
+                    Limitation = Helper.GetLimitationByString(Token.Value<string>("ban_goat"));
 
                 Type = Helper.GetCardTypeByString(Token.Value<string>("type"));
+                DeckPart = DeckPart.MAIN_DECK;
 
                 switch (Type)
                 {
                     case CardType.MONSTER:
                         MonsterCardType = Helper.GetMonsterCardTypeByString(Token.Value<string>("type"));
+                        if (MonsterCardType == MonsterCardType.FUSION
+                            || MonsterCardType == MonsterCardType.SYNCHRO
+                            || MonsterCardType == MonsterCardType.XYZ
+                            || MonsterCardType == MonsterCardType.LINK)
+                        {
+                            DeckPart = DeckPart.EXTRA_DECK;
+                        }
                         MonsterType = Helper.GetMonsterTypeByString(Token.Value<string>("race"));
                         Monster2ndType = Helper.GetMonster2ndCardTypeByString(Token.Value<string>("type"));
                         MonsterAttribute = Helper.GetMonsterAttributeByString(Token.Value<string>("attribute"));
@@ -302,6 +319,22 @@ namespace YGO_Searcher
             if (CardLimitation >= 0)
                 ToReturn &= (Limitation == CardLimitation);
             return (ToReturn);
+        }
+
+        public bool CanAddCardToDeck(List<Card> Deck)
+        {
+            int SameCard = 0;
+
+            foreach (var card in Deck)
+            {
+                if (card.Name == Name)
+                    SameCard++;
+            }
+
+            if (SameCard >= Limitation)
+                return (false);
+
+            return (true);
         }
     }
 }

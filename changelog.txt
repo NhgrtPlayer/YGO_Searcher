@@ -13,5 +13,14 @@ Ajout: Check box pour la recherche d'archétype
 Bug corrigé: mauvais type de carte lors de la création de la liste
 
 1.4
+Taille de la fenêtre par défaut corrigé
 Bug corrigé: Les monstres Wyrm & Zombie n'ont pas leur type d'affichés
 Bug corrigé: Les tokens sont récupérés depuis la DB
+Bug corrigé: Les cartes interdites ne le sont pas (erreur de string lors de la récup)
+
+1.5
+Ajout: Menu Edit->Création de deck & Export de deck
+Ajout: Menu About
+Ajout: Création de deck possible - Liste de deck ajouté sur la gauche
+Ajout: Menu Edit->GOAT Format, le logiciel garde les cartes dans un autre fichier avec une autre banlist
+Modif: La textbox qui affiche l'effet de la carte en preview a la scrollbar d'affiché que quand nécessaire

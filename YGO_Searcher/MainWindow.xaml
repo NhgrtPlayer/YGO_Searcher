@@ -6,11 +6,13 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:YGO_Searcher"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="650" Width="1000">
     <Window.Resources>
         <local:CardTypeConverter x:Key="CardTypeConverter" />
         <local:MonsterStatConverter x:Key="MonsterStatConverter" />
         <local:MonsterStatVisibilityConverter x:Key="MonsterStatVisibilityConverter" />
+        <local:CardLimitConverter x:Key="CardLimitConverter" />
+        <local:CardLimitVisibilityConverter x:Key="CardLimitVisibilityConverter" />
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -22,11 +24,20 @@
                 <Separator />
                 <MenuItem Header="_Exit" />
             </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Create a Deck" />
+                <MenuItem Header="_Export Deck to .ydk" Click="ExportDeck_Click" />
+                <Separator />
+                <MenuItem Header="Use _GOAT Format" Name="UseGoatFormat" IsCheckable="True" IsChecked="False" Click="UpdateGoatFormat_Click" />
+            </MenuItem>
+            <MenuItem Header="_About" Click="About_MenuItem_Click">
+            </MenuItem>
         </Menu>
         <Grid DockPanel.Dock="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1.1*"/>
+                <ColumnDefinition Width="0.9*"/>
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0" Width="475">
                 <Grid.RowDefinitions>
@@ -328,7 +339,9 @@
                 <ListView Grid.Row="1" Name="CardSearch_ListView" Height="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Background="Transparent" MouseEnter="UpdateSelectedCard">
+                            <Grid Background="Transparent"
+                                  MouseEnter="UpdateSelectedCard"
+                                  MouseRightButtonDown="AddCardToDeck">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="65" />
                                 </Grid.RowDefinitions>
@@ -337,16 +350,18 @@
                                     <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
                                 <Image Grid.Column="0" Width="40" VerticalAlignment="Stretch" Source="{Binding ImgUrlSmall}" />
+                                <Image Grid.Column="0" Width="15" Margin="1,3,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                                       Visibility="{Binding Converter={StaticResource CardLimitVisibilityConverter}, Mode=OneWay}" Source="{Binding Converter={StaticResource CardLimitConverter}, Mode=OneWay}" />
                                 <StackPanel Grid.Column="1" Margin="5,0,0,0">
-                                    <TextBlock Text="{Binding Name}" />
-                                    <TextBlock Text="{Binding Converter={StaticResource CardTypeConverter}}" />
-                                    <TextBlock Visibility="{Binding Converter={StaticResource MonsterStatVisibilityConverter} }" Text="{Binding Converter={StaticResource MonsterStatConverter}}" />
-                                    <TextBlock Text="{Binding Description}" />
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                    <TextBlock Text="{Binding Converter={StaticResource CardTypeConverter}, Mode=OneWay}" />
+                                    <TextBlock Visibility="{Binding Converter={StaticResource MonsterStatVisibilityConverter}, Mode=OneWay}" Text="{Binding Converter={StaticResource MonsterStatConverter}, Mode=OneWay}" />
+                                    <TextBlock Text="{Binding Description, Mode=OneWay}" />
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-                    <!--<ListViewItem Height="65">
+                    <!--<ListViewItem>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="65" />
@@ -356,6 +371,7 @@
                                 <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
                             <Image Grid.Column="0" Width="40" VerticalAlignment="Center" Source="https://storage.googleapis.com/ygoprodeck.com/pics_small/27551.jpg" />
+                            <Image Grid.Column="0" Width="15" Margin="1,3,0,0"  VerticalAlignment="Top" HorizontalAlignment="Left" Source="/Icons/Limitation/Forbidden.png" />
                             <StackPanel Grid.Column="1" Margin="3,0,0,0" Orientation="Vertical">
                                 <TextBlock TextTrimming="CharacterEllipsis">
                             Blue-Eyes White Dragon
@@ -371,7 +387,8 @@
                                 </TextBlock>
                             </StackPanel>
                         </Grid>
-                    </ListViewItem>-->
+                    </ListViewItem>
+                    -->
                 </ListView>
             </Grid>
             <Grid Name="CardPreview" Grid.Column="1">
@@ -380,19 +397,86 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="1*" />
                 </Grid.RowDefinitions>
-                <Image Grid.Row="0" Height="275" Source="{Binding ImgUrl}"/>
+                <Image Grid.Row="0" Height="275" Source="{Binding ImgUrl, Mode=OneWay}"/>
                 <Border Grid.Row="1">
                     <StackPanel Orientation="Vertical">
-                        <TextBlock TextWrapping="Wrap" Text="{Binding Name}" />
-                        <TextBlock Text="{Binding Converter={StaticResource CardTypeConverter}}" />
-                        <TextBlock Visibility="{Binding Converter={StaticResource MonsterStatVisibilityConverter} }" Text="{Binding Converter={StaticResource MonsterStatConverter}}" />
+                        <TextBlock TextWrapping="Wrap" Text="{Binding Name, Mode=OneWay}" />
+                        <TextBlock Text="{Binding Converter={StaticResource CardTypeConverter}, Mode=OneWay}" />
+                        <TextBlock Visibility="{Binding Converter={StaticResource MonsterStatVisibilityConverter}, Mode=OneWay}" Text="{Binding Converter={StaticResource MonsterStatConverter}, Mode=OneWay}" />
                     </StackPanel>
                 </Border>
-                <ScrollViewer Grid.Row="2">
-                    <TextBox TextWrapping="Wrap"
+                <TextBox Grid.Row="2"
+                         TextWrapping="Wrap"
                          IsReadOnly="True"
-                         Text="{Binding Description}" />
-                </ScrollViewer>
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         Text="{Binding Description, Mode=OneWay}" />
+            </Grid>
+            <Grid Name="Deck_Grid" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.9*" />
+                    <RowDefinition Height="0.1*" />
+                </Grid.RowDefinitions>
+                <ListView Name="Deck_ListView" Grid.Row="0"
+                           ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"/>
+                                        <TextBlock Text=" (" FontWeight="Bold" FontSize="14"/>
+                                        <TextBlock Text="{Binding ItemCount}" FontWeight="Bold" FontSize="14"/>
+                                        <TextBlock Text=")" FontWeight="Bold" FontSize="14"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel MouseEnter="UpdateSelectedCard" MouseRightButtonDown="RemoveCardFromDeck">
+                                <Image Height="30" Source="{Binding ImgUrlSmall}" />
+                                <Canvas DockPanel.Dock="Left">
+                                    <Image Canvas.Bottom="18" Canvas.Right="10" DockPanel.Dock="Left" Width="12" Margin="1,3,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                                           Visibility="{Binding Converter={StaticResource CardLimitVisibilityConverter} }" Source="{Binding Converter={StaticResource CardLimitConverter}}" />
+                                </Canvas>
+                                <TextBlock DockPanel.Dock="Right" Margin="3,0,0,0" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" HorizontalAlignment="Left"
+                                       Text="{Binding Name}"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <!--
+                    <ListViewItem>
+                        <DockPanel>
+                            <Image Height="30" Source="https://storage.googleapis.com/ygoprodeck.com/pics/27551.jpg" />
+                            <Canvas DockPanel.Dock="Left">
+                                <Image Canvas.Bottom="18" Canvas.Right="10" DockPanel.Dock="Left" Width="12" Margin="1,3,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"
+                                   Source="/Icons/Limitation/Limited.png" />
+                            </Canvas>
+                            <TextBlock DockPanel.Dock="Right" Margin="3,0,0,0" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center"
+                                       Text="Card Name WWWWWWWWWWWWWWWWWWWWWw"/>
+                        </DockPanel>
+                    </ListViewItem>
+                    -->
+                </ListView>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" HorizontalAlignment="Stretch" Click="SortDeck_Button_Click">SORT</Button>
+                        <Button Grid.Column="1" HorizontalAlignment="Stretch" Click="ClearDeck_Button_Click">CLEAR</Button>
+                    </Grid>
+                    <Button Grid.Row="1" HorizontalAlignment="Stretch" Click="ExportDeck_Click">EXPORT TO .YDK</Button>
+                </Grid>
             </Grid>
         </Grid>
     </DockPanel>

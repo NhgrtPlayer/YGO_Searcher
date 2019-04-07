@@ -62,6 +62,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="About.cs" />
     <Compile Include="RequestProgressionWindow.xaml.cs">
       <DependentUpon>RequestProgressionWindow.xaml</DependentUpon>
     </Compile>
@@ -122,7 +123,11 @@
     <Resource Include="Icons\Attribute\WATER.png" />
     <Resource Include="Icons\Attribute\WIND.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Icons\Limitation\Forbidden.png" />
+    <Resource Include="Icons\Limitation\Limited.png" />
+    <Resource Include="Icons\Limitation\Semi-Limited.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Property\Continuous.png" />
     <Resource Include="Icons\Property\Counter.png" />
