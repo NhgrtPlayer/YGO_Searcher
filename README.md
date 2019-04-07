@@ -1,6 +1,12 @@
 # YGO_Searcher
 A small application to search Yu-Gi-Oh cards and create decks (exportable to the .ydk format) !
 
+# Usage
+- Launch YGO_Searcher.exe
+- If you don't see cards, do File->Update Cards from DB
+- If you want to use the GOAT format, do Edit->Use GOAT Format
+- Don't forget to do File->Save Cards to file if you want a local store of the cards !
+
 # Changelog
 
 1.5
