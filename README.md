@@ -9,6 +9,13 @@ A small application to search Yu-Gi-Oh cards and create decks (exportable to the
 
 # Changelog
 
+1.6
+Bug fixed: Monster 2nd type is ignored
+Bug fixed: Filters are still apllied after returning to 'Any' filters
+Modif: Deck sorting is now correct (that's cool)
+Modif: Choosing Alpha or New sorting now refreshes the list
+Added: Exclusive Pack for GOAT format
+
 1.5
 Added: Edit Menu -> Creation & Export of decks
 Added: About menu (credits :D)
