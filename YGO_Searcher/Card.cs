@@ -289,7 +289,7 @@ namespace YGO_Searcher
                     ToReturn &= ((ChosenMonsterCardType & MonsterCardType) != 0);
                     ToReturn &= ((ChosenMonsterAttribute & MonsterAttribute) != 0);
                     ToReturn &= ((ChosenMonsterType & MonsterType) != 0);
-                    ToReturn &= ((ChosenMonster2ndType & Monster2ndType) != 0 || Monster2ndType == 0);
+                    ToReturn &= ((ChosenMonster2ndType & Monster2ndType) != 0 || (int) ChosenMonster2ndType == (1 << 8) - 1);
                     if (LvlMin >= 0)
                         ToReturn &= (LvlMin <= Level);
                     if (LvlMax >= 0)
@@ -335,6 +335,27 @@ namespace YGO_Searcher
                 return (false);
 
             return (true);
+        }
+
+        public int CompareTo(Card other)
+        {
+            if (Type < other.Type)
+                return (-1);
+            if (Type > other.Type)
+                return (1);
+            if (Type == CardType.MONSTER)
+            {
+                if (MonsterCardType < other.MonsterCardType)
+                    return (-1);
+                if (MonsterCardType > other.MonsterCardType)
+                    return (1);
+            }
+            int NameComparison = string.Compare(Name, other.Name);
+            if (NameComparison < 0)
+                return (-1);
+            if (NameComparison > 0)
+                return (1);
+            return (0);
         }
     }
 }

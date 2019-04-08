@@ -321,7 +321,8 @@
                             Reset Filters
                         </Button>
                         <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                            <ComboBox Name="Sorting_ComboBox"
+                            <ComboBox Name="Sorting_ComboBox" 
+                                      DropDownClosed="ActualizeCards"
                                 VerticalAlignment="Bottom" HorizontalAlignment="Right"
                                  Grid.Row="2" Height="23" Width="Auto">
                                 <ComboBoxItem IsSelected="True">Alpha</ComboBoxItem>

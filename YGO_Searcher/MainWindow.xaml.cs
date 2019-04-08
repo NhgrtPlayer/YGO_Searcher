@@ -159,7 +159,8 @@ namespace YGO_Searcher
             PendulumScalesMin_TextBox.Text = "";
             PendulumScalesMax_TextBox.Text = "";
 
-            UpdateFilters(sender, e);
+            if (sender != null)
+                UpdateFilters(sender, e);
         }
 
         private void SearchCards(object sender, RoutedEventArgs e)
@@ -226,6 +227,9 @@ namespace YGO_Searcher
             SpellType_WrapPanel.Visibility = Helper.CardTypeIsOfType(ChosenCardType, CardType.SPELL) ? Visibility.Visible : Visibility.Collapsed;
             TrapType_WrapPanel.Visibility = Helper.CardTypeIsOfType(ChosenCardType, CardType.TRAP) ? Visibility.Visible : Visibility.Collapsed;
             PendulumScales_WrapPanel.Visibility = ChosenMonster2ndType.HasFlag(Monster2ndType.PENDULUM) ? Visibility.Visible : Visibility.Collapsed;
+
+            if (CardType_ComboBox.SelectedIndex == 0)
+                ResetFilters(null, null);
         }
 
         private void UpdateShownCards(List<Card> NewShownCards)
@@ -242,6 +246,13 @@ namespace YGO_Searcher
 
             if ((!UseGOATFormat && File.Exists("cards.bin")) || (UseGOATFormat && File.Exists("cards_goat.bin")))
                 LoadCardsFromFile(null, null);
+
+            SearchCards(sender, e);
+        }
+
+        private void ActualizeCards(object sender, EventArgs e)
+        {
+            SearchCards(sender, null);
         }
 
         private void UpdateSelectedCard(object sender, MouseEventArgs e)
@@ -287,8 +298,9 @@ namespace YGO_Searcher
 
         private void SortDeck_Button_Click(object sender, RoutedEventArgs e)
         {
-            Deck.Sort((a, b) => (a.Name.CompareTo(b.Name)));
-            Deck.Sort((a, b) => (a.Type.CompareTo(b.Type)));
+            //Deck.Sort((a, b) => (a.Name.CompareTo(b.Name)));
+            //Deck.Sort((a, b) => (a.Type.CompareTo(b.Type)));
+            Deck.Sort((a, b) => (a.CompareTo(b)));
             UpdateDeck();
         }
 

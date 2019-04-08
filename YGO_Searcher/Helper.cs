@@ -545,6 +545,7 @@ public static TrapType GetTrapTypeSelection(int TrapTypeSelectedIndex)
             GoatSetTags.Add("SD2");
             GoatSetTags.Add("SD3");
             GoatSetTags.Add("SD4");
+            GoatSetTags.Add("EP1");
 
             foreach (var SetTag in SetTags)
             {

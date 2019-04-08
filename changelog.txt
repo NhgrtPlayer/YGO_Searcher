@@ -24,3 +24,10 @@ Ajout: Menu About
 Ajout: Création de deck possible - Liste de deck ajouté sur la gauche
 Ajout: Menu Edit->GOAT Format, le logiciel garde les cartes dans un autre fichier avec une autre banlist
 Modif: La textbox qui affiche l'effet de la carte en preview a la scrollbar d'affiché que quand nécessaire
+
+1.6
+Bug corrigé: Le 2nd Type des monstres est correctement utilisé dans les filtres
+Bug corrigé: Après être revenu en mode CardType "Any" après avoir sélectionné d'aures filtres, ils étaient toujours appliquées
+Modif: Le tri de deck est maintenant correcte (ça c'est stylé)
+Modif: Choisir un mode de tri actualise la liste
+Ajout: Exclusive Pack pour la GOAT
