@@ -7,6 +7,11 @@ A small application to search Yu-Gi-Oh cards and create decks (exportable to the
 - If you want to use the GOAT format, do Edit->Use GOAT Format
 - Don't forget to do File->Save Cards to file if you want a local store of the cards !
 
+# TODO
+- Stop the program of being detected as a virus u_u
+- Deck Importing
+- Deck Links (like in HS, import & export decks via a single link) !
+
 # Changelog
 
 1.6
