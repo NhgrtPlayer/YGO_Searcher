@@ -14,6 +14,9 @@ A small application to search Yu-Gi-Oh cards and create decks (exportable to the
 
 # Changelog
 
+1.7
+- Added: Deck Codes ! Easily share deck with Deck Codes
+
 1.6
 - Bug fixed: Monster 2nd type is ignored
 - Bug fixed: Filters are still apllied after returning to 'Any' filters
