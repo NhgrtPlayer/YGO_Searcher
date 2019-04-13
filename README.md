@@ -6,11 +6,15 @@ A small application to search Yu-Gi-Oh cards and create decks (exportable to the
 - If you don't see cards, do File->Update Cards from DB
 - If you want to use the GOAT format, do Edit->Use GOAT Format
 - Don't forget to do File->Save Cards to file if you want a local store of the cards !
+- If you want to add cards to the deck, right-click on them
+- If you want to remove cards from the deck, right-click on them
+- If you want to export the deck, you can do Edit->Export Deck or use the button Export to .ydk
+- If you want to use Deck Codes, click the 'Copy Deck Code' button on the right OR do Edit->Copy Deck Code to Clipboard.
+- Copy a Deck Code and do Edit->Import Deck Code in order to import the deck into the program (careful to the format !) !
 
 # TODO
 - Stop the program of being detected as a virus u_u
-- Deck Importing
-- Deck Links (like in HS, import & export decks via a single link) !
+- Deck Importing for .ydk format (I'm lazy, I'll do it one day)
 
 # Changelog
 
