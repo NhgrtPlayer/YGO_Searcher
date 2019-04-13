@@ -558,5 +558,14 @@ public static TrapType GetTrapTypeSelection(int TrapTypeSelectedIndex)
 
             return (false);
         }
+
+        public static Card GetCardById(string Id, List<Card> Cards)
+        {
+            for (int i = 0; i < Cards.Count; i++) {
+                if (Cards[i].Id == Id)
+                    return (Cards[i]);
+            }
+            return (null);
+        }
     }
 }

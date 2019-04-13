@@ -104,7 +104,8 @@ namespace YGO_Searcher
     public enum DeckPart
     {
         MAIN_DECK,
-        EXTRA_DECK
+        EXTRA_DECK,
+        SIDE_DECK
     }
 
     [Serializable]

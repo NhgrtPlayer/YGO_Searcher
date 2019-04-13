@@ -12,7 +12,7 @@ namespace YGO_Searcher
         public static string NAME = "YGO Searcher";
         public static string CREATOR = "Merwan LARA";
         public static int MAJOR_VERSION = 1;
-        public static int MINOR_VERSION = 6;
+        public static int MINOR_VERSION = 7;
 
         public static void ShowAboutWindow()
         {

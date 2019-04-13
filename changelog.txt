@@ -31,3 +31,7 @@ Bug corrigé: Après être revenu en mode CardType "Any" après avoir sélectionné d'
 Modif: Le tri de deck est maintenant correcte (ça c'est stylé)
 Modif: Choisir un mode de tri actualise la liste
 Ajout: Exclusive Pack pour la GOAT
+
+1.7
+Ajout: Deck Codes
+Ajout: Menu Edit -> Copy & Import de code de deck

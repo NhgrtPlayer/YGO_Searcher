@@ -25,8 +25,10 @@
                 <MenuItem Header="_Exit" />
             </MenuItem>
             <MenuItem Header="_Edit">
-                <MenuItem Header="_Create a Deck" />
-                <MenuItem Header="_Export Deck to .ydk" Click="ExportDeck_Click" />
+                <MenuItem Header="Create a _Deck" />
+                <MenuItem Header="_Export Deck to .ydk" Click="ExportDeckYdk_Click" />
+                <MenuItem Header="_Copy Deck Code to Clipboard" Click="CopyDeckCode_Click" />
+                <MenuItem Header="_Import Deck Code" Click="ImportDeckCode_Click" />
                 <Separator />
                 <MenuItem Header="Use _GOAT Format" Name="UseGoatFormat" IsCheckable="True" IsChecked="False" Click="UpdateGoatFormat_Click" />
             </MenuItem>
@@ -468,15 +470,14 @@
                         <RowDefinition Height="1*" />
                         <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" HorizontalAlignment="Stretch" Click="SortDeck_Button_Click">SORT</Button>
-                        <Button Grid.Column="1" HorizontalAlignment="Stretch" Click="ClearDeck_Button_Click">CLEAR</Button>
-                    </Grid>
-                    <Button Grid.Row="1" HorizontalAlignment="Stretch" Click="ExportDeck_Click">EXPORT TO .YDK</Button>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Click="SortDeck_Button_Click">SORT</Button>
+                    <Button Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Click="ClearDeck_Button_Click">CLEAR</Button>
+                    <Button Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" Click="ExportDeckYdk_Click">EXPORT TO .YDK</Button>
+                    <Button Name="DeckCode_Button" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Click="CopyDeckCode_Click">COPY DECK CODE</Button>
                 </Grid>
             </Grid>
         </Grid>

@@ -230,6 +230,8 @@ namespace YGO_Searcher
 
             if (CardType_ComboBox.SelectedIndex == 0)
                 ResetFilters(null, null);
+
+            UpdateDeck();
         }
 
         private void UpdateShownCards(List<Card> NewShownCards)
@@ -290,6 +292,7 @@ namespace YGO_Searcher
 
         private void UpdateDeck()
         {
+            DeckCode_Button.Content = "COPY DECK CODE";
             Deck_ListView.ItemsSource = Deck;
             Deck_ListView.Items.Refresh();
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(Deck_ListView.ItemsSource);
@@ -298,8 +301,6 @@ namespace YGO_Searcher
 
         private void SortDeck_Button_Click(object sender, RoutedEventArgs e)
         {
-            //Deck.Sort((a, b) => (a.Name.CompareTo(b.Name)));
-            //Deck.Sort((a, b) => (a.Type.CompareTo(b.Type)));
             Deck.Sort((a, b) => (a.CompareTo(b)));
             UpdateDeck();
         }
@@ -310,14 +311,35 @@ namespace YGO_Searcher
             UpdateDeck();
         }
 
-        private void ExportDeck_Click(object sender, RoutedEventArgs e)
+        private void ExportDeckYdk_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "YGOPro Deck file (*.ydk)|*.ydk";
             saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             if (saveFileDialog.ShowDialog() == true)
-                Helper.ExportDeck(Deck, saveFileDialog.FileName); // TODO
+                Helper.ExportDeck(Deck, saveFileDialog.FileName);
+        }
+
+        private void CopyDeckCode_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(Serializer.Serialize(Deck));
+            DeckCode_Button.Content = "Copied!";
+        }
+
+        private void ImportDeckCode_Click(object sender, RoutedEventArgs e)
+        {
+            string DeckCode = Clipboard.GetText();
+            Deck.Clear();
+            try
+            {
+                Deck.AddRange(Serializer.DeserializeDeckString(DeckCode, Cards));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Code in clipboard is invalid");
+            }
+            UpdateDeck();
         }
 
         private void About_MenuItem_Click(object sender, RoutedEventArgs e)
